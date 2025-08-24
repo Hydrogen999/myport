@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Projects - DevStore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .project-card {
+            transition: all 0.3s ease;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .project-image {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .project-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+            opacity: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .project-card:hover .project-overlay {
+            opacity: 1;
+        }
+        
+        .free-badge {
+            background: linear-gradient(135deg, #10b981, #059669);
+            transform: rotate(-5deg);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+        
+        .wishlist-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .wishlist-btn.active {
+            color: #ef4444;
+            transform: scale(1.2);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .preview-modal {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .preview-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .star-rating {
+            color: #e5e7eb;
+        }
+        
+        .star-rating .filled {
+            color: #fbbf24;
+        }
+        
+        .tech-tag {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #667eea;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .dark .tech-tag {
+            background: rgba(102, 126, 234, 0.2);
+            color: #a5b4fc;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .dark .project-card {
+            background: #1f2937;
+        }
+        
+        .download-btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .download-btn:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .download-btn:hover:after {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .category-chip {
+            transition: all 0.2s ease;
+        }
+        
+        .category-chip.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-2xl font-bold mr-2">
+                        <i class="fas fa-code"></i>
+                    </a>
+                    <h1 class="text-xl sm:text-2xl font-bold">DevStore</h1>
+                </div>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="hover:text-blue-100 transition-colors">Home</a>
+                    <a href="free-projects.html" class="bg-white text-purple-600 px-4 py-1 rounded-full font-semibold">Free Projects</a>
+                    <a href="portshop.html" class="hover:text-blue-100 transition-colors">Premium</a>
+                    <!-- <a href="templates.html" class="hover:text-blue-100 transition-colors">Templates</a> -->
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button id="themeToggle" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    
+                    <button id="wishlistBtn" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors relative">
+                        <i class="fas fa-heart"></i>
+                        <span class="cart-badge" id="wishlistCount">0</span>
+                    </button>
+                    
+                    <!-- <a href="cart.html" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-badge" id="cartCount">0</span>
+                    </a> -->
+                    
+                    <!-- <button class="bg-white text-purple-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors">
+                        Sign In
+                    </button> -->
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">Free Projects & Templates</h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                Explore our collection of free, high-quality projects and templates to kickstart your development journey
+            </p>
+            <div class="flex justify-center gap-4">
+                <a href="projects.html" class="bg-white text-purple-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors">
+                    Browse Free Projects
+                </a>
+                <a href="portshop.html" class="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-purple-600 transition-colors">
+                    View Premium
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-12 bg-white dark:bg-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="text-center p-6 bg-gray-50 dark:bg-gray-700 rounded-2xl">
+                    <div class="text-3xl font-bold gradient-text mb-2">15+</div>
+                    <p class="text-gray-600 dark:text-gray-400">Free Projects</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 dark:bg-gray-700 rounded-2xl">
+                    <div class="text-3xl font-bold gradient-text mb-2">10K+</div>
+                    <p class="text-gray-600 dark:text-gray-400">Downloads</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 dark:bg-gray-700 rounded-2xl">
+                    <div class="text-3xl font-bold gradient-text mb-2">4.8★</div>
+                    <p class="text-gray-600 dark:text-gray-400">Average Rating</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 dark:bg-gray-700 rounded-2xl">
+                    <div class="text-3xl font-bold gradient-text mb-2">100%</div>
+                    <p class="text-gray-600 dark:text-gray-400">Open Source</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="py-8 bg-white dark:bg-gray-800 shadow-sm" id="projects">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-wrap gap-4 justify-center">
+                <button class="filter-btn px-6 py-2 rounded-full bg-gray-100 dark:bg-gray-700 font-semibold transition-colors active">
+                    All Projects
+                </button>
+                <button class="filter-btn px-6 py-2 rounded-full bg-gray-100 dark:bg-gray-700 font-semibold transition-colors">
+                    HTML/CSS
+                </button>
+                <button class="filter-btn px-6 py-2 rounded-full bg-gray-100 dark:bg-gray-700 font-semibold transition-colors">
+                    JavaScript
+                </button>
+                <!-- <button class="filter-btn px-6 py-2 rounded-full bg-gray-100 dark:bg-gray-700 font-semibold transition-colors">
+                    React
+                </button>
+                <button class="filter-btn px-6 py-2 rounded-full bg-gray-100 dark:bg-gray-700 font-semibold transition-colors">
+                    Vue.js
+                </button> -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <section class="py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Free Project 1 -->
+                <div class="project-card bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
+                    <div class="project-image h-48 relative">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/061629f9-c7df-4aa6-b9f4-d2865e49a4bb.png" 
+                             alt="Responsive Portfolio Template" 
+                             class="w-full h-full object-cover">
+                        <div class="project-overlay">
+                            <div class="flex gap-3">
+                                <button class="preview-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="1">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="download-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="1">
+                                    <i class="fas fa-download" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="absolute top-4 left-4 free-badge px-3 py-1 text-white font-bold text-sm">
+                            FREE
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="font-bold text-lg">Portfolio Template</h3>
+                            <button class="wishlist-btn text-gray-400 hover:text-red-500 transition-colors" data-id="1">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                            Modern responsive portfolio template with dark mode and animations.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="tech-tag">HTML</span>
+                            <span class="tech-tag">CSS</span>
+                            <span class="tech-tag">JavaScript</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="star-rating">
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star-half-alt filled"></i>
+                                <span class="text-gray-600 dark:text-gray-400 text-sm ml-1">4.7</span>
+                            </div>
+                            <span class="text-sm text-gray-500">2.5K downloads</span>
+                        </div>
+                        <button class="download-btn w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-colors" data-id="1">
+                            <i class="fas fa-download mr-2" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                            <a href="https://github.com/Hydrogen999/chessgames">Download Free</a>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Free Project 2 -->
+                <div class="project-card bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
+                    <div class="project-image h-48 relative">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/2f4a4623-b841-4cac-bdd4-ba65d0a5988a.png" 
+                             alt="Weather App JavaScript Project" 
+                             class="w-full h-full object-cover">
+                        <div class="project-overlay">
+                            <div class="flex gap-3">
+                                <button class="preview-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="2">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="download-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="2">
+                                    <i class="fas fa-download" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="absolute top-4 left-4 free-badge px-3 py-1 text-white font-bold text-sm">
+                            FREE
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="font-bold text-lg">Weather App</h3>
+                            <button class="wishlist-btn text-gray-400 hover:text-red-500 transition-colors" data-id="2">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                            Beautiful weather application with API integration and responsive design.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">API</span>
+                            <span class="tech-tag">CSS3</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="star-rating">
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="far fa-star"></i>
+                                <span class="text-gray-600 dark:text-gray-400 text-sm ml-1">4.3</span>
+                            </div>
+                            <span class="text-sm text-gray-500">1.8K downloads</span>
+                        </div>
+                        <button class="download-btn w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-colors" data-id="2">
+                            <i class="fas fa-download mr-2" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                            Download Free
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Free Project 3 -->
+                <div class="project-card bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
+                    <div class="project-image h-48 relative">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3e39c138-3ddc-4eea-a2cc-4b0287eccfd6.png" 
+                             alt="Task Manager App" 
+                             class="w-full h-full object-cover">
+                        <div class="project-overlay">
+                            <div class="flex gap-3">
+                                <button class="preview-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="3">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="download-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="3">
+                                    <i class="fas fa-download" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="absolute top-4 left-4 free-badge px-3 py-1 text-white font-bold text-sm">
+                            FREE
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="font-bold text-lg">Task Manager</h3>
+                            <button class="wishlist-btn text-gray-400 hover:text-red-500 transition-colors" data-id="3">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                            Simple task management application with local storage functionality.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">LocalStorage</span>
+                            <span class="tech-tag">CSS</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="star-rating">
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <span class="text-gray-600 dark:text-gray-400 text-sm ml-1">5.0</span>
+                            </div>
+                            <span class="text-sm text-gray-500">3.2K downloads</span>
+                        </div>
+                        <button class="download-btn w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-colors" data-id="3">
+                            <i class="fas fa-download mr-2" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                            Download Free
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Free Project 4 -->
+                <div class="project-card bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
+                    <div class="project-image h-48 relative">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/4d2218ad-57cf-4962-b536-6c84cdb3655e.png" 
+                             alt="Calculator App" 
+                             class="w-full h-full object-cover">
+                        <div class="project-overlay">
+                            <div class="flex gap-3">
+                                <button class="preview-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="4">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="download-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="4">
+                                    <i class="fas fa-download" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="absolute top-4 left-4 free-badge px-3 py-1 text-white font-bold text-sm">
+                            FREE
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="font-bold text-lg">Calculator App</h3>
+                            <button class="wishlist-btn text-gray-400 hover:text-red-500 transition-colors" data-id="4">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                            Modern calculator with scientific functions and responsive design.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">CSS Grid</span>
+                            <span class="tech-tag">Responsive</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="star-rating">
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star-half-alt filled"></i>
+                                <span class="text-gray-600 dark:text-gray-400 text-sm ml-1">4.6</span>
+                            </div>
+                            <span class="text-sm text-gray-500">2.1K downloads</span>
+                        </div>
+                        <button class="download-btn w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-colors" data-id="4">
+                            <i class="fas fa-download mr-2" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                            Download Free
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="text-center mt-12">
+                <button class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-full font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors">
+                    Load More Projects
+                </button>
+            </div>
+        </div>
+    </section>
+
+     <!-- Projects Grid -->
+    <section class="py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Free Project 1 -->
+                <div class="project-card bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
+                    <div class="project-image h-48 relative">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/061629f9-c7df-4aa6-b9f4-d2865e49a4bb.png" 
+                             alt="Responsive Portfolio Template" 
+                             class="w-full h-full object-cover">
+                        <div class="project-overlay">
+                            <div class="flex gap-3">
+                                <button class="preview-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="1">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="download-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="1">
+                                    <i class="fas fa-download" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="absolute top-4 left-4 free-badge px-3 py-1 text-white font-bold text-sm">
+                            FREE
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="font-bold text-lg">Portfolio Template</h3>
+                            <button class="wishlist-btn text-gray-400 hover:text-red-500 transition-colors" data-id="1">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                            Modern responsive portfolio template with dark mode and animations.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="tech-tag">HTML</span>
+                            <span class="tech-tag">CSS</span>
+                            <span class="tech-tag">JavaScript</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="star-rating">
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star-half-alt filled"></i>
+                                <span class="text-gray-600 dark:text-gray-400 text-sm ml-1">4.7</span>
+                            </div>
+                            <span class="text-sm text-gray-500">2.5K downloads</span>
+                        </div>
+                        <button class="download-btn w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-colors" data-id="1">
+                            <i class="fas fa-download mr-2" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                            Download Free
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Free Project 2 -->
+                <div class="project-card bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
+                    <div class="project-image h-48 relative">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/2f4a4623-b841-4cac-bdd4-ba65d0a5988a.png" 
+                             alt="Weather App JavaScript Project" 
+                             class="w-full h-full object-cover">
+                        <div class="project-overlay">
+                            <div class="flex gap-3">
+                                <button class="preview-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="2">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="download-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="2">
+                                    <i class="fas fa-download" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="absolute top-4 left-4 free-badge px-3 py-1 text-white font-bold text-sm">
+                            FREE
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="font-bold text-lg">Weather App</h3>
+                            <button class="wishlist-btn text-gray-400 hover:text-red-500 transition-colors" data-id="2">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                            Beautiful weather application with API integration and responsive design.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">API</span>
+                            <span class="tech-tag">CSS3</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="star-rating">
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="far fa-star"></i>
+                                <span class="text-gray-600 dark:text-gray-400 text-sm ml-1">4.3</span>
+                            </div>
+                            <span class="text-sm text-gray-500">1.8K downloads</span>
+                        </div>
+                        <button class="download-btn w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-colors" data-id="2">
+                            <i class="fas fa-download mr-2" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                            Download Free
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Free Project 3 -->
+                <div class="project-card bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
+                    <div class="project-image h-48 relative">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3e39c138-3ddc-4eea-a2cc-4b0287eccfd6.png" 
+                             alt="Task Manager App" 
+                             class="w-full h-full object-cover">
+                        <div class="project-overlay">
+                            <div class="flex gap-3">
+                                <button class="preview-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="3">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="download-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="3">
+                                    <i class="fas fa-download" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="absolute top-4 left-4 free-badge px-3 py-1 text-white font-bold text-sm">
+                            FREE
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="font-bold text-lg">Task Manager</h3>
+                            <button class="wishlist-btn text-gray-400 hover:text-red-500 transition-colors" data-id="3">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                            Simple task management application with local storage functionality.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">LocalStorage</span>
+                            <span class="tech-tag">CSS</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="star-rating">
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <span class="text-gray-600 dark:text-gray-400 text-sm ml-1">5.0</span>
+                            </div>
+                            <span class="text-sm text-gray-500">3.2K downloads</span>
+                        </div>
+                        <button class="download-btn w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-colors" data-id="3">
+                            <i class="fas fa-download mr-2" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                            Download Free
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Free Project 4 -->
+                <div class="project-card bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
+                    <div class="project-image h-48 relative">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/4d2218ad-57cf-4962-b536-6c84cdb3655e.png" 
+                             alt="Calculator App" 
+                             class="w-full h-full object-cover">
+                        <div class="project-overlay">
+                            <div class="flex gap-3">
+                                <button class="preview-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="4">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="download-btn bg-white text-purple-600 p-3 rounded-full hover:scale-110 transition-transform" data-id="4">
+                                    <i class="fas fa-download" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="absolute top-4 left-4 free-badge px-3 py-1 text-white font-bold text-sm">
+                            FREE
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="font-bold text-lg">Calculator App</h3>
+                            <button class="wishlist-btn text-gray-400 hover:text-red-500 transition-colors" data-id="4">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                            Modern calculator with scientific functions and responsive design.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">CSS Grid</span>
+                            <span class="tech-tag">Responsive</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="star-rating">
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star-half-alt filled"></i>
+                                <span class="text-gray-600 dark:text-gray-400 text-sm ml-1">4.6</span>
+                            </div>
+                            <span class="text-sm text-gray-500">2.1K downloads</span>
+                        </div>
+                        <button class="download-btn w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-colors" data-id="4">
+                            <i class="fas fa-download mr-2" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                            Download Free
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="text-center mt-12">
+                <!-- <button class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-full font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors">
+                    Load More Projects
+                </button> -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Preview Modal -->
+    <div class="preview-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl max-w-4xl w-full max-h-90vh overflow-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Portfolio Template</h2>
+                    <button class="close-preview text-2xl text-gray-500 hover:text-gray-800 dark:hover:text-white">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/061629f9-c7df-4aa6-b9f4-d2865e49a4bb.png" 
+                             alt="Portfolio Template Preview" 
+                             class="rounded-2xl w-full">
+                    </div>
+                    <div>
+                        <div class="mb-6">
+                            <div class="free-badge px-4 py-2 text-white font-bold text-lg inline-block mb-4">
+                                FREE DOWNLOAD
+                            </div>
+                            <div class="star-rating mb-4">
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star filled"></i>
+                                <i class="fas fa-star-half-alt filled"></i>
+                                <span class="text-gray-600 dark:text-gray-400 ml-2">4.7 (428 reviews)</span>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-400 mb-4">
+                                A modern, responsive portfolio template perfect for developers and designers. Features dark mode, smooth animations, and fully customizable sections.
+                            </p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="font-semibold mb-3">Features:</h3>
+                            <ul class="space-y-2">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Fully Responsive Design</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Dark/Light Mode Toggle</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Smooth Animations</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Project Showcase Section</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>Contact Form</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="font-semibold mb-3">Technologies:</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-tag">HTML5</span>
+                                <span class="tech-tag">CSS3</span>
+                                <span class="tech-tag">JavaScript</span>
+                                <span class="tech-tag">Tailwind CSS</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button class="download-btn flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-colors">
+                                <i class="fas fa-download mr-2" style="outline: rgb(0, 0, 0) dotted 3px; outline-offset: 1px;"></i>
+                                Download Now
+                            </button>
+                            <button class="wishlist-btn p-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 hover:border-red-500 hover:text-red-500 transition-colors">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletter Section -->
+    <section class="py-16 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-4">Get Free Projects Weekly</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+                Subscribe to our newsletter and receive free projects, coding tips, and exclusive content every week.
+            </p>
+            <div class="max-w-md mx-auto flex gap-4">
+                <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <button class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-colors">
+                    Subscribe
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Initialize wishlist
+        let wishlist = [];
+        
+        // DOM Elements
+        const wishlistCount = document.getElementById('wishlistCount');
+        const previewModal = document.querySelector('.preview-modal');
+        
+        // Initialize
+        function init() {
+            updateWishlistCount();
+            setupEventListeners();
+            loadFromLocalStorage();
+        }
+        
+        // Load from localStorage
+        function loadFromLocalStorage() {
+            const savedWishlist = localStorage.getItem('devstore_free_wishlist');
+            
+            if (savedWishlist) {
+                wishlist = JSON.parse(savedWishlist);
+                updateWishlistCount();
+                updateWishlistIcons();
+            }
+        }
+        
+        // Save to localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('devstore_free_wishlist', JSON.stringify(wishlist));
+        }
+        
+        // Update wishlist count
+        function updateWishlistCount() {
+            wishlistCount.textContent = wishlist.length;
+        }
+        
+        // Update wishlist icons
+        function updateWishlistIcons() {
+            document.querySelectorAll('.wishlist-btn').forEach(btn => {
+                const projectId = btn.getAttribute('data-id');
+                if (wishlist.includes(parseInt(projectId))) {
+                    btn.innerHTML = '<i class="fas fa-heart"></i>';
+                    btn.classList.add('active');
+                } else {
+                    btn.innerHTML = '<i class="far fa-heart"></i>';
+                    btn.classList.remove('active');
+                }
+            });
+        }
+        
+        // Toggle wishlist
+        function toggleWishlist(projectId) {
+            const index = wishlist.indexOf(parseInt(projectId));
+            
+            if (index > -1) {
+                wishlist.splice(index, 1);
+            } else {
+                wishlist.push(parseInt(projectId));
+            }
+            
+            updateWishlistCount();
+            updateWishlistIcons();
+            saveToLocalStorage();
+        }
+        
+        // Download project
+        function downloadProject(projectId) {
+            // Simulate download
+            const link = document.createElement('a');
+            link.href = '#'; // In a real scenario, this would be the actual download URL
+            link.download = `project-${projectId}.zip`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show success message
+            alert('Download started! Thank you for downloading this free project.');
+        }
+        
+        // Open preview
+        function openPreview(projectId) {
+            previewModal.classList.add('active');
+        }
+        
+        // Close preview
+        function closePreview() {
+            previewModal.classList.remove('active');
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Wishlist buttons
+            document.querySelectorAll('.wishlist-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-id');
+                    toggleWishlist(projectId);
+                });
+            });
+            
+            // Download buttons
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-id');
+                    downloadProject(projectId);
+                });
+            });
+            
+            // Preview buttons
+            document.querySelectorAll('.preview-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-id');
+                    openPreview(projectId);
+                });
+            });
+            
+            // Close preview
+            document.querySelector('.close-preview').addEventListener('click', closePreview);
+            
+            // Theme toggle
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            
+            // Close modal on outside click
+            previewModal.addEventListener('click', function(e) {
+                if (e.target === previewModal) {
+                    closePreview();
+                }
+            });
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+        
+        // Toggle theme
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
